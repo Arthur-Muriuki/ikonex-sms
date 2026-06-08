@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model ClassStream {
+  id       String    @id @default(uuid())
+  name     String    @unique 
+  students Student[]
+  subjects Subject[] // This creates a many-to-many relationship automatically
+}
+
+model Student {
+  id              String      @id @default(uuid())
+  name            String
+  admissionNumber String      @unique
+  classStreamId   String
+  classStream     ClassStream @relation(fields: [classStreamId], references: [id], onDelete: Cascade)
+  scores          Score[]
+}
+
+model Subject {
+  id           String        @id @default(uuid())
+  name         String
+  code         String        @unique
+  classStreams ClassStream[] // Linked to ClassStream
+  scores       Score[]
+}
+
+model Score {
+  id        String  @id @default(uuid())
+  studentId String
+  subjectId String
+  examScore Float
+  caScore   Float
+  total     Float   
+  term      String  
+
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  // This is the magic line that prevents duplicate score entries
+  @@unique([studentId, subjectId, term]) 
+}
