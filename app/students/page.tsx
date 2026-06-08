@@ -1,5 +1,6 @@
 import { createStudent, getStudents } from "@/actions/studentActions";
 import { getStreams } from "@/actions/streamActions";
+import Link from "next/link";
 
 export default async function StudentsPage() {
   // Fetch both datasets concurrently from the server
@@ -73,7 +74,15 @@ export default async function StudentsPage() {
                 <tbody>
                   {students.map((student) => (
                     <tr key={student.id} className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="py-3 px-4 font-medium text-gray-800">{student.name}</td>
+                      
+                      {/* --- THE LINK IS ADDED HERE --- */}
+                      <td className="py-3 px-4 font-medium text-gray-800">
+                        <Link href={`/students/${student.id}`} className="text-blue-600 hover:text-blue-800 hover:underline">
+                          {student.name}
+                        </Link>
+                      </td>
+                      {/* -------------------------------- */}
+
                       <td className="py-3 px-4">
                         <span className="px-2 py-1 bg-green-50 text-green-700 rounded text-xs font-semibold border border-green-200">
                           {student.classStream?.name || "Unassigned"}

@@ -43,3 +43,22 @@ export async function getStudents() {
     orderBy: { name: "asc" },
   });
 }
+// Action to fetch a single student's complete profile and grades
+export async function getStudentById(id: string) {
+  return await db.student.findUnique({
+    where: {
+      id: id,
+    },
+    include: {
+      classStream: true,
+      scores: {
+        include: {
+          subject: true,
+        },
+        orderBy: {
+          term: "desc", // Groups newest terms first
+        },
+      },
+    },
+  });
+}

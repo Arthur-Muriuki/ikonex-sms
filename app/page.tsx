@@ -1,23 +1,58 @@
-export default function Home() {
+import { db } from "@/lib/db";
+import Link from "next/link";
+
+export default async function DashboardPage() {
+  // Fetch all our database counts in parallel so the page loads instantly
+  const [studentCount, streamCount, subjectCount, scoreCount] = await Promise.all([
+    db.student.count(),
+    db.classStream.count(),
+    db.subject.count(),
+    db.score.count(),
+  ]);
+
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
-      <p className="text-gray-600">Welcome to the Ikonex Student Management System.</p>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        {/* Placeholder Stat Cards */}
-        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-700">Total Students</h2>
-          <p className="text-3xl font-bold text-blue-600 mt-2">0</p>
+    <div className="max-w-6xl mx-auto">
+      <h1 className="text-3xl font-bold mb-8 text-gray-800">School Overview</h1>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        
+        {/* Students Stat Card */}
+        <div className="bg-white p-6 rounded-lg shadow border border-gray-200 flex flex-col items-center justify-center text-center">
+          <h3 className="text-gray-500 font-medium mb-2">Total Students</h3>
+          <span className="text-4xl font-bold text-blue-600">{studentCount}</span>
+          <Link href="/students" className="mt-4 text-sm text-blue-500 hover:underline">
+            Manage Students &rarr;
+          </Link>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-700">Class Streams</h2>
-          <p className="text-3xl font-bold text-green-600 mt-2">0</p>
+
+        {/* Streams Stat Card */}
+        <div className="bg-white p-6 rounded-lg shadow border border-gray-200 flex flex-col items-center justify-center text-center">
+          <h3 className="text-gray-500 font-medium mb-2">Active Streams</h3>
+          <span className="text-4xl font-bold text-green-600">{streamCount}</span>
+          <Link href="/streams" className="mt-4 text-sm text-green-500 hover:underline">
+            Manage Streams &rarr;
+          </Link>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-700">Subjects</h2>
-          <p className="text-3xl font-bold text-purple-600 mt-2">0</p>
+
+        {/* Subjects Stat Card */}
+        <div className="bg-white p-6 rounded-lg shadow border border-gray-200 flex flex-col items-center justify-center text-center">
+          <h3 className="text-gray-500 font-medium mb-2">Curriculum Subjects</h3>
+          <span className="text-4xl font-bold text-purple-600">{subjectCount}</span>
+          <Link href="/subjects" className="mt-4 text-sm text-purple-500 hover:underline">
+            Manage Subjects &rarr;
+          </Link>
         </div>
+
+        {/* Scores Stat Card */}
+        <div className="bg-white p-6 rounded-lg shadow border border-gray-200 flex flex-col items-center justify-center text-center">
+          <h3 className="text-gray-500 font-medium mb-2">Grades Recorded</h3>
+          <span className="text-4xl font-bold text-orange-600">{scoreCount}</span>
+          <Link href="/scores" className="mt-4 text-sm text-orange-500 hover:underline">
+            View Ledger &rarr;
+          </Link>
+        </div>
+
       </div>
     </div>
   );
