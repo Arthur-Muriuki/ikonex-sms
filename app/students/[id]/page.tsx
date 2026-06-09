@@ -1,16 +1,17 @@
-import { getStudentById } from "@/actions/studentActions"; // adjust path if needed
+import { getStudentById } from "@/actions/studentActions";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-// The params object automatically grabs the dynamic ID from the URL
-export default async function StudentProfilePage({ params }: { params: { id: string } }) {
-  const student = await getStudentById(params.id);
+export default async function StudentProfilePage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  const studentId = resolvedParams.id;
+
+  const student = await getStudentById(studentId);
 
   if (!student) {
-    notFound(); // Shows a 404 page if the student doesn't exist
+    notFound(); 
   }
 
-  // Calculate overall average for all recorded scores
   const totalMarks = student.scores.reduce((acc, score) => acc + score.total, 0);
   const average = student.scores.length > 0 
     ? (totalMarks / student.scores.length).toFixed(1) 
@@ -25,7 +26,6 @@ export default async function StudentProfilePage({ params }: { params: { id: str
         </Link>
       </div>
 
-      {/* ID Card Header */}
       <div className="bg-white p-6 rounded-lg shadow border border-gray-200 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
           <h2 className="text-2xl font-bold text-gray-800">{student.name}</h2>
@@ -39,7 +39,6 @@ export default async function StudentProfilePage({ params }: { params: { id: str
         </div>
       </div>
 
-      {/* Academic Report Card */}
       <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
         <div className="p-6 border-b border-gray-200 bg-gray-50">
           <h3 className="text-xl font-semibold text-gray-700">Academic Record</h3>

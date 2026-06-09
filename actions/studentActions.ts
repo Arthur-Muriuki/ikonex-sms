@@ -62,3 +62,47 @@ export async function getStudentById(id: string) {
     },
   });
 }
+// Action to update student details
+export async function updateStudent(id: string, formData: FormData) {
+  const name = formData.get("name") as string;
+  const streamId = formData.get("streamId") as string;
+
+  if (!name || !streamId) {
+    return { error: "Name and Class Stream are required fields." };
+  }
+
+  try {
+    await db.student.update({
+      where: { id },
+      data: {
+        name,
+        classStreamId: streamId, // <-- Changed this to match Prisma schema!
+      },
+    });
+
+    revalidatePath("/students");
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { error: "Failed to update student profile." };
+  }
+}
+
+// Action to delete a student account
+export async function deleteStudent(formData: FormData) {
+  const id = formData.get("id") as string;
+
+  if (!id) return { error: "Missing student identification." };
+
+  try {
+    await db.student.delete({
+      where: { id },
+    });
+
+    revalidatePath("/students");
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { error: "Failed to delete student. Ensure their recorded scores are removed first." };
+  }
+}
